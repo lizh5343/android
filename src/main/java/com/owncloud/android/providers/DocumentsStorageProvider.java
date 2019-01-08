@@ -53,6 +53,7 @@ import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.OwnCloudClientManagerFactory;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
+import com.owncloud.android.operations.RemoveFileOperation;
 import com.owncloud.android.operations.SynchronizeFileOperation;
 import com.owncloud.android.ui.activity.ConflictsResolveActivity;
 import com.owncloud.android.ui.activity.Preferences;
@@ -115,7 +116,7 @@ public class DocumentsStorageProvider extends DocumentsProvider {
         }
 
         if (currentStorageManager == null) {
-            throw new FileNotFoundException("File with " + documentId + " not found");
+            throw new FileNotFoundException("File with id " + documentId + " not found");
         }
 
         OCFile file = currentStorageManager.getFileById(docId);
@@ -268,6 +269,28 @@ public class DocumentsStorageProvider extends DocumentsProvider {
         }
 
         return result;
+    }
+
+    @Override
+    public void deleteDocument(String documentId) throws FileNotFoundException {
+        long docId = Long.parseLong(documentId);
+        updateCurrentStorageManagerIfNeeded(docId);
+
+        OCFile file = currentStorageManager.getFileById(docId);
+
+        if (file == null) {
+            throw new FileNotFoundException("File " + documentId + " not found!");
+        }
+        Account account = currentStorageManager.getAccount();
+
+        RemoveFileOperation removeFileOperation = new RemoveFileOperation(file.getRemotePath(), false, account, true,
+                                                                          getContext());
+
+        RemoteOperationResult result = removeFileOperation.execute(client, currentStorageManager);
+
+        if (!result.isSuccess()) {
+            throw new FileNotFoundException("Failed to delete document with documentId " + documentId);
+        }
     }
 
     @SuppressLint("LongLogTag")

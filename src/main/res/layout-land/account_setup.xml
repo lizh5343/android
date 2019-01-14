@@ -296,4 +296,14 @@
             app:cornerRadius="@dimen/button_corner_radius"/>
 	</LinearLayout>
 
+    <ImageButton
+        android:id="@+id/scanQR"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:adjustViewBounds="true"
+        android:background="@color/transparent"
+        android:contentDescription="@string/scanQR_description"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_qrcode_scan" />
+
 </RelativeLayout>
